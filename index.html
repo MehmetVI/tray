@@ -16,6 +16,19 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
+    }
+
+    .top-text {
+      position: absolute;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      color: #ddd;
+      font-size: 30px;
+      font-weight: bold;
+      letter-spacing: 1px;
     }
 
     .box {
@@ -71,6 +84,8 @@
 </head>
 
 <body>
+  <div class="top-text">MEHMET</div>
+
   <div class="box">
     <h1>Tray Control</h1>
 
