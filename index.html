@@ -37,6 +37,7 @@
       border-radius: 16px;
       text-align: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      min-width: 480px;
     }
 
     h1 {
@@ -53,13 +54,10 @@
     }
 
     button {
-      width: 56px;
-      height: 56px;
       border: none;
       border-radius: 12px;
       background: #2d2d2d;
       color: white;
-      font-size: 22px;
       cursor: pointer;
       transition: 0.15s;
     }
@@ -67,6 +65,43 @@
     button:hover {
       background: #3b3b3b;
       transform: translateY(-2px);
+    }
+
+    .letter-btn {
+      width: 56px;
+      height: 56px;
+      font-size: 22px;
+    }
+
+    .input-area {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #customInput {
+      width: 230px;
+      height: 44px;
+      border: none;
+      border-radius: 10px;
+      background: #2d2d2d;
+      color: white;
+      font-size: 18px;
+      text-align: center;
+      outline: none;
+    }
+
+    #customInput::placeholder {
+      color: #777;
+      font-size: 14px;
+    }
+
+    .send-btn {
+      width: 86px;
+      height: 44px;
+      font-size: 15px;
+      font-weight: bold;
     }
 
     #status {
@@ -80,6 +115,32 @@
       color: #666;
       font-size: 12px;
     }
+
+    @media (max-width: 600px) {
+      .box {
+        min-width: auto;
+        width: 85%;
+        padding: 24px;
+      }
+
+      .top-text {
+        top: 55px;
+        font-size: 24px;
+      }
+
+      .input-area {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #customInput {
+        width: 220px;
+      }
+
+      .send-btn {
+        width: 220px;
+      }
+    }
   </style>
 </head>
 
@@ -90,23 +151,28 @@
     <h1>Tray Control</h1>
 
     <div class="buttons">
-      <button onclick="sendLetter('A')">A</button>
-      <button onclick="sendLetter('B')">B</button>
-      <button onclick="sendLetter('C')">C</button>
-      <button onclick="sendLetter('D')">D</button>
-      <button onclick="sendLetter('E')">E</button>
-      <button onclick="sendLetter('G')">G</button>
-      <button onclick="sendLetter('T')">T</button>
+      <button class="letter-btn" onclick="sendMessage('A')">A</button>
+      <button class="letter-btn" onclick="sendMessage('B')">B</button>
+      <button class="letter-btn" onclick="sendMessage('C')">C</button>
+      <button class="letter-btn" onclick="sendMessage('D')">D</button>
+      <button class="letter-btn" onclick="sendMessage('E')">E</button>
+      <button class="letter-btn" onclick="sendMessage('G')">G</button>
+      <button class="letter-btn" onclick="sendMessage('T')">T</button>
+    </div>
+
+    <div class="input-area">
+      <input id="customInput" maxlength="50" placeholder="Example: 1,3,5,7,9,8" />
+      <button class="send-btn" onclick="sendCustomText()">SEND</button>
     </div>
 
     <div id="status">Waiting...</div>
-    <div class="small">Last pressed letter will appear in the tray.</div>
+    <div class="small">Button or input text will appear in the tray.</div>
   </div>
 
   <script>
     const FIREBASE_DB_URL = "https://tray-5eab6-default-rtdb.europe-west1.firebasedatabase.app";
 
-    async function sendLetter(letter) {
+    async function sendMessage(message) {
       const status = document.getElementById("status");
 
       try {
@@ -115,19 +181,45 @@
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify(letter)
+          body: JSON.stringify(message)
         });
 
         if (!response.ok) {
           throw new Error("Firebase write failed");
         }
 
-        status.textContent = `Sent: ${letter}`;
+        status.textContent = `Sent: ${message}`;
       } catch (error) {
         console.error(error);
-        status.textContent = "Error sending letter";
+        status.textContent = "Error sending message";
       }
     }
+
+    async function sendCustomText() {
+      const input = document.getElementById("customInput");
+      let text = input.value.trim();
+
+      if (text === "") {
+        document.getElementById("status").textContent = "Please write something";
+        return;
+      }
+
+      const allowed = /^[0-9,]+$/;
+
+      if (!allowed.test(text)) {
+        document.getElementById("status").textContent = "Only numbers and commas are allowed";
+        return;
+      }
+
+      await sendMessage(text);
+      input.value = "";
+    }
+
+    document.getElementById("customInput").addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        sendCustomText();
+      }
+    });
   </script>
 </body>
 </html>
