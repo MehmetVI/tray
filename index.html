@@ -81,7 +81,7 @@
     }
 
     #customInput {
-      width: 230px;
+      width: 240px;
       height: 44px;
       border: none;
       border-radius: 10px;
@@ -90,6 +90,7 @@
       font-size: 18px;
       text-align: center;
       outline: none;
+      padding: 0 12px;
     }
 
     #customInput::placeholder {
@@ -108,6 +109,7 @@
       margin-top: 18px;
       color: #aaa;
       font-size: 14px;
+      min-height: 18px;
     }
 
     .small {
@@ -161,7 +163,7 @@
     </div>
 
     <div class="input-area">
-      <input id="customInput" maxlength="50" placeholder="Example: 1,3,5,7,9,8" />
+      <input id="customInput" maxlength="80" placeholder="Write anything..." />
       <button class="send-btn" onclick="sendCustomText()">SEND</button>
     </div>
 
@@ -201,13 +203,6 @@
 
       if (text === "") {
         document.getElementById("status").textContent = "Please write something";
-        return;
-      }
-
-      const allowed = /^[0-9,]+$/;
-
-      if (!allowed.test(text)) {
-        document.getElementById("status").textContent = "Only numbers and commas are allowed";
         return;
       }
 
