@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Tray Control</title>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .box {
+      background: #1b1b1b;
+      padding: 28px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 18px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 520px;
+    }
+
+    button {
+      width: 56px;
+      height: 56px;
+      border: none;
+      border-radius: 12px;
+      background: #2d2d2d;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    button:hover {
+      background: #3b3b3b;
+      transform: translateY(-2px);
+    }
+
+    #status {
+      margin-top: 18px;
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .small {
+      margin-top: 10px;
+      color: #666;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <h1>Tray Control</h1>
+
+    <div class="buttons">
+      <button onclick="sendLetter('A')">A</button>
+      <button onclick="sendLetter('B')">B</button>
+      <button onclick="sendLetter('C')">C</button>
+      <button onclick="sendLetter('D')">D</button>
+      <button onclick="sendLetter('E')">E</button>
+      <button onclick="sendLetter('G')">G</button>
+      <button onclick="sendLetter('T')">T</button>
+    </div>
+
+    <div id="status">Waiting...</div>
+    <div class="small">Last pressed letter will appear in the tray.</div>
+  </div>
+
+  <script>
+    const FIREBASE_DB_URL = "https://tray-5eab6-default-rtdb.europe-west1.firebasedatabase.app";
+
+    async function sendLetter(letter) {
+      const status = document.getElementById("status");
+
+      try {
+        const response = await fetch(`${FIREBASE_DB_URL}/tray/message.json`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(letter)
+        });
+
+        if (!response.ok) {
+          throw new Error("Firebase write failed");
+        }
+
+        status.textContent = `Sent: ${letter}`;
+      } catch (error) {
+        console.error(error);
+        status.textContent = "Error sending letter";
+      }
+    }
+  </script>
+</body>
+</html>
